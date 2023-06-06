@@ -1,0 +1,34 @@
+name: Check PR Status
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  prStatus:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Get PR Status
+        id: pr
+        run: |
+          pr_number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
+          pr_status=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                       "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
+                       | jq -r '.state')
+
+          echo "::set-output name=pr_status::$pr_status"
+
+      - name: Perform Actions Based on PR Status
+        run: |
+          pr_status="${{ steps.pr.outputs.pr_status }}"
+          if [[ $pr_status == "open" ]]; then
+            echo "PR is open. Perform actions here."
+          else
+            echo "PR is not open. Skipping actions."
+          fi

@@ -1,0 +1,14 @@
+{
+  "name": "pr-status-github-action",
+  "version": "1.0.0",
+  "description": "check if pr status is open",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "phollaki",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.0"
+  }
+}
