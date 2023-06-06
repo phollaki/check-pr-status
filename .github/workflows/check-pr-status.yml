@@ -38,6 +38,6 @@ jobs:
           fi
 
       - name: Evaluate if branches are merged
-      if: steps.currentPR.outputs.number != '' && github.event.workflow_run.head_branch != 'master' && steps.afterMerge.outputs.state == 'open'
-      run: |
-        exit 402
+        if: steps.currentPR.outputs.number != '' && github.event.workflow_run.head_branch != 'master' && steps.afterMerge.outputs.state == 'open'
+        run: |
+          exit 402
