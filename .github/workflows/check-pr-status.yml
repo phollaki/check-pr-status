@@ -30,14 +30,13 @@ jobs:
       - name: Perform Actions Based on PR Status
         run: |
           pr_status="${{ steps.pr.outputs.pr_status }}"
-          pr_head_branch="${{ github.event.workflow_run.head_branch }}"
-          pr_head_branch_ref="${{ github.event.pull_request.head.ref }}"
+          pr_head_branch_ref="${{ github.event.pull_request.base.ref }}"
           pr_title="${{ steps.pr.outputs.pr_title }}"
-          pr_number="${{ github.event.pull_request.url }}"
+          pr_number="${{ github.event.pull_request.number }}"
 
           if [[ $pr_status == "open" ]]; then
             echo "PR is open. Perform actions here. PR Title: $pr_title"
-            echo "$pr_number, $pr_head_branch, $pr_head_branch_ref, $pr_status"
+            echo "PR number: $pr_number, PR base ref: $pr_head_branch_ref, PR status: $pr_status"
           else
             echo "PR is not open. Skipping actions. PR Title: $pr_title"
             echo "$pr_number, $pr_head_branch, $pr_status"
