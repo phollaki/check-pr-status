@@ -19,8 +19,9 @@ jobs:
         run: |
           pr_number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
           state=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                       "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
-                       | jq -r '.state')
+                        "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
+                        | jq -r '.state')
+          echo current PR $pr_number status:  ${{steps.afterMerge.outputs.state}}, or $state
 
 
       - name: Perform Actions Based on PR Status
