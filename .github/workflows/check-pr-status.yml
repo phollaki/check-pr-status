@@ -27,7 +27,6 @@ jobs:
       - name: Perform Actions Based on PR Status
         run: |
           pr_status="${{ steps.afterMerge.outputs.state }}"
-          echo "${{ needs.prStatus.outputs.state }}, ${{ steps.afterMerge.outputs.state}}, ${{ needs.afterMerge.outputs.state }}"
           if [[ $pr_status == "open" ]]; then
             echo "PR status: $pr_status"
           else
