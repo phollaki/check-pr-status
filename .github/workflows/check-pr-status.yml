@@ -19,20 +19,13 @@ jobs:
         run: |
           pr_number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
           pr_status=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                       "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
+                       "https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.currentPR.outputs.number }}" \
                        | jq -r '.state')
-          pr_title=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                      "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
-                      | jq -r '.title')
-          echo "::set-output name=pr_status::$pr_status"
-          echo "::set-output name=pr_title::$pr_title"
+
 
       - name: Perform Actions Based on PR Status
         run: |
           pr_status="${{ steps.pr.outputs.pr_status }}"
-          pr_head_branch_ref="${{ github.event.pull_request.base.ref }}"
-          pr_title="${{ steps.pr.outputs.pr_title }}"
-          pr_number="${{ github.event.pull_request.number }}"
 
           if [[ $pr_status == "open" ]]; then
             echo "PR is open. Perform actions here. PR Title: $pr_title"
