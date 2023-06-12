@@ -15,24 +15,21 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get PR Status
-        id: pr
+        id: afterMerge
         run: |
           pr_number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
-          pr_status=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                       "https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.currentPR.outputs.number }}" \
+          state=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                       "https://api.github.com/repos/${{ github.repository }}/pulls/${pr_number}" \
                        | jq -r '.state')
 
 
       - name: Perform Actions Based on PR Status
         run: |
-          pr_status="${{ steps.pr.outputs.pr_status }}"
-
+          pr_status="${{ steps.afterMerge.outputs.state }}"
           if [[ $pr_status == "open" ]]; then
-            echo "PR is open. Perform actions here. PR Title: $pr_title"
-            echo "PR number: $pr_number, PR base ref: $pr_head_branch_ref, PR status: $pr_status"
+            echo "PR status: $pr_status"
           else
-            echo "PR is not open. Skipping actions. PR Title: $pr_title"
-            echo "$pr_number, $pr_head_branch, $pr_status"
+            echo "$pr_status"
           fi
 
       - name: Evaluate if branches are merged
