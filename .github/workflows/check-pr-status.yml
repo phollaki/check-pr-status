@@ -14,51 +14,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - uses: 8BitJonny/gh-get-current-pr@2.2.0
-        id: PR
-
-      - name: Pr Status with Johny repository
-        id: afterMergePR
-        run: |
-          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
-          echo "::set-output name=prClosedAt::$prClosedAt"
-
-      - run: echo "PR ${prNumber} ${prTitle} at ${prUrl} is ${prJSON}"
-        if: steps.PR.outputs.pr_found == 'true'
-        env:
-          # JSON object with the full PR object
-          # toJSON(fromJSON(...pr)) parses it into memory and then format is with pretty-print.
-          prJSON: ${{ toJSON(fromJSON(steps.current_pr.outputs.pr)) }}
-          # Direct access to common PR properties
-          prNumber: ${{ steps.PR.outputs.number }}
-          prUrl: ${{ steps.PR.outputs.pr_url }}
-          prTitle: ${{ steps.PR.outputs.pr_title }}
-          prBody: ${{ steps.PR.outputs.pr_body }}
-          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
-          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
-          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
-          prLabel: ${{ steps.PR.outputs.pr_labels }}
-
       - name: Get PR Status
-        id: afterMerge
+        id: PR
         run: |
-          pr_number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
-          state=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                        "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" \
+          number=$(echo "${{ github.event.pull_request.url }}" | awk -F/ '{print $NF}')
+          status=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                        "https://api.github.com/repos/${{ github.repository }}/pulls/$number" \
                         | jq -r '.state')
-          echo current PR $pr_number status: $state
-          echo "::set-output name=state::$state"
+          echo current PR $pr_number status: $status
+          echo "::set-output name=state::$status"
 
       - name: Perform Actions Based on PR Status
         run: |
-          pr_status="${{ steps.afterMerge.outputs.state }}"
-          if [[ $pr_status == "open" ]]; then
-            echo "PR status: $pr_status"
-          else
-            echo "$pr_status"
-          fi
+          echo "PR status: ${{ steps.PR.outputs.status }}"
 
       - name: Evaluate if branches are merged
-        if: steps.afterMerge.outputs.state != 'closed'
+        if: steps.PR.outputs.state != 'closed'
         run: |
           exit 402
