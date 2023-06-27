@@ -14,6 +14,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+        id: PR
+
+      - name: Pr Status with Johny repository
+        id: afterMergePR
+        run: |
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          echo "::set-output name=prClosedAt::$prClosedAt"
+
+      - name: Pr Status with Johny repository
+        id: echoPrClosedAt
+        run: |
+          echo ${{steps.afterMergePR.prClosedAt}}
+
       - name: Get PR Status
         id: afterMerge
         run: |
