@@ -26,7 +26,7 @@ jobs:
       - name: Pr Status with Johny repository
         id: echoPrClosedAt
         run: |
-          echo ${{steps.afterMergePR.prClosedAt}}
+          echo ${{steps.afterMergePR.outputs.prClosedAt}}
 
       - name: Get PR Status
         id: afterMerge
